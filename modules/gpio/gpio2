@@ -107,7 +107,7 @@ elif [ "$time_checkbox" = "on" ]; then
 elif [ "$temp_checkbox" = "on" ] && [ "$tempday_checkbox" != "on" ]; then
 	temp_run=$(sqlite3 $dir/dbf/nettemp.db "SELECT temp_run FROM gpio WHERE gpio='$gpio'")
    if [ -n "$gpio_list" ] && [ "$temp_run" = "on" ]; then
-		
+
 		temp_onoff=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_onoff FROM gpio WHERE gpio='$gpio'"`
 		temp_temp=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_temp FROM gpio WHERE gpio='$gpio'"`
 		temp_sensor=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_sensor FROM gpio WHERE gpio='$gpio'"`
@@ -197,7 +197,6 @@ elif [ "$temp_checkbox" = "on" ] && [ "$tempday_checkbox" != "on" ]; then
 			fi
 		fi
 	    fi
-
 	temp_onoff1=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_onoff1 FROM gpio WHERE gpio='$gpio'"`
 	temp_temp1=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_temp1 FROM gpio WHERE gpio='$gpio'"`
 	temp_sensor1=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_sensor1 FROM gpio WHERE gpio='$gpio'"`
@@ -378,7 +377,6 @@ elif [ "$temp_checkbox" = "on" ] && [ "$tempday_checkbox" != "on" ]; then
 	fi
         fi
     
-
 	temp_onoff3=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_onoff3 FROM gpio WHERE gpio='$gpio'"`
 	temp_temp3=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_temp3 FROM gpio WHERE gpio='$gpio'"`
 	temp_sensor3=`sqlite3 $dir/dbf/nettemp.db "SELECT temp_sensor3 FROM gpio WHERE gpio='$gpio'"`

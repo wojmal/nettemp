@@ -257,7 +257,12 @@ exec("$dir/gpio2 status $gpio", $out_arr);
 		<td><?php echo $a['name']; ?></td>
 		<input type="hidden" name="gpio" value="<?php echo $a['gpio']; ?>"/>
 		<input type="hidden" name="off" value="OFF" />
-		<td><?php passthru("$dir/gpio2 check $gpio");?> </td>
+		<td><?php system("$dir/gpio2 check $gpio");
+			
+exec ('echo -e "dupa \n dupa \n dupa"', $scanme);
+$scanme = implode("\n",$scanme);
+	?> 
+		</td>
 		<td><input type="image"  src="media/ico/Button-Turn-Off-icon.png"/></td>
 	</form>
 	</tr></table>
