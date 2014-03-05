@@ -46,9 +46,8 @@ sed -i '$a url.access-deny             = ( "~", ".inc", ".dbf", ".db", ".txt", "
  echo "url.rewrite-once = ( \"^/([A-Za-z0-9-_-]+)\$\" => \"/index.php?id=\$1\" )" >> /etc/lighttpd/lighttpd.conf 
  fi
 
-
 echo -e "${GREEN}Which version you want to download?${R}"
-echo -e "${GREEN}Regular [r] or Beta [b]${R}"
+echo -e "${GREEN}Regular [r] or Klimek [b]${R}"
 read x 
 cd /var/www
 
@@ -63,7 +62,7 @@ git clone https://github.com/sosprz/nettemp
 fi
 
 if [ "$x" = "b" ]; then 
-git clone -b beta https://github.com/sosprz/nettemp
+git clone -b klimek https://github.com/sosprz/nettemp
 fi
 
 echo -e "${GREEN}Add permisions${R}"
