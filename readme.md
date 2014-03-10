@@ -18,6 +18,18 @@ USERS:
     temp temp - access only for sensors settings
 
 Changelog:
+7.4.13
+clicable icons in gpio menu
+optimize gpio check's
+fix cron gpio>gpio2
+
+
+7.4.12
+db fix
+gpio fix
+
+7.4.11
+fix: rrd create db 
 
 7.4.10
 fix: script "check" now only check from browser 
