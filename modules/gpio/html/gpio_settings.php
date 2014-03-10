@@ -257,12 +257,7 @@ exec("$dir/gpio2 status $gpio", $out_arr);
 		<td><?php echo $a['name']; ?></td>
 		<input type="hidden" name="gpio" value="<?php echo $a['gpio']; ?>"/>
 		<input type="hidden" name="off" value="OFF" />
-		<td><?php system("$dir/gpio2 check $gpio");
-			
-exec ('echo -e "dupa \n dupa \n dupa"', $scanme);
-$scanme = implode("\n",$scanme);
-	?> 
-		</td>
+		<td><pre><?php system("$dir/gpio2 check $gpio");?> </pre></td>
 		<td><input type="image"  src="media/ico/Button-Turn-Off-icon.png"/></td>
 	</form>
 	</tr></table>
@@ -363,8 +358,7 @@ $scanme = implode("\n",$scanme);
     	</form>
 	<td>
 	if
-	</td>
-      <td>
+	</td>     <td>
 	<form action="gpio" method="post">
 		<select name="temp_sensor" >
 		<?php $sth = $db->prepare("SELECT * FROM sensors");
@@ -402,8 +396,6 @@ $scanme = implode("\n",$scanme);
 
 	</tr>
 	<tr>
-	<td></td>
-	<td></td>
 	<td></td>
 	<td></td>
 	<td></td>
