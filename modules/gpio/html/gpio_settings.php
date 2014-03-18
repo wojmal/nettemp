@@ -370,9 +370,6 @@ exec("$dir/gpio2 status $gpio", $out_arr);
         </select></td>
 		<td>
 	<select name="temp_op" >
-        <option <?php echo $a['temp_op'] == 'lt' ? 'selected="selected"' : ''; ?> value="lt">&lt;</option>   
-        <option <?php echo $a['temp_op'] == 'le' ? 'selected="selected"' : ''; ?> value="le">&lt;&#61;</option>     
-        <option <?php echo $a['temp_op'] == 'gt' ? 'selected="selected"' : ''; ?> value="gt">&gt;</option>   
         <option <?php echo $a['temp_op'] == 'ge' ? 'selected="selected"' : ''; ?> value="ge">&gt;&#61;</option>   
 	</select>
 		</td>
@@ -380,8 +377,7 @@ exec("$dir/gpio2 status $gpio", $out_arr);
 		<td>then</td> 
 		<td>
         <select name="temp_onoff" >
-        <option <?php echo $a['temp_onoff'] == 'on' ? 'selected="selected"' : ''; ?> value="on">On</option>   
-        <option <?php echo $a['temp_onoff'] == 'off' ? 'selected="selected"' : ''; ?> value="off">Off</option>     
+        <option <?php echo $a['temp_onoff'] == 'on' ? 'selected="selected"' : ''; ?> value="on">ON</option>   
         </select></td>
 		<?php if ($a['tempday_checkbox'] == 'on') { ?>
 	    <td>Time</td>
@@ -392,7 +388,6 @@ exec("$dir/gpio2 status $gpio", $out_arr);
 		<input type="hidden" name="gpio" value="<?php echo $a['gpio']; ?>"/>
     	<td><input type="image" src="media/ico/Button-Turn-On-icon.png"/></td>
 		<input type="hidden" name="tempon" value="tempON" />
-<?php for ($i = 1; $i <= 2; $i++) { ?>
 
 	</tr>
 	<tr>
@@ -406,35 +401,66 @@ exec("$dir/gpio2 status $gpio", $out_arr);
 	<td></td>
 	<td></td>
 	<td>
-	if
+	else
 	</td>
       <td>
-		<select name="<?php echo "temp_sensor$i";?>" >
+		<select name="<?php echo "temp_sensor1";?>" >
 		<?php $sth = $db->prepare("SELECT * FROM sensors");
 		$sth->execute();
 		$result = $sth->fetchAll();
 		foreach ($result as $select) { ?>
-		<option <?php echo $a['temp_sensor'.$i] == $select['id'] ? 'selected="selected"' : ''; ?> value="<?php echo $select['id']; ?>"><?php echo "{$select['name']}  {$select['tmp']}" ?>&deg;C</option>
+		<option <?php echo $a['temp_sensor1'] == $select['id'] ? 'selected="selected"' : ''; ?> value="<?php echo $select['id']; ?>"><?php echo "{$select['name']}  {$select['tmp']}" ?>&deg;C</option>
 		<?php } ?>
         </select></td>
 		<td>
-	<select name="<?php echo "temp_op$i";?>" >
-	<option <?php echo $a['temp_op'.$i] == 'lt' ? 'selected="selected"' : ''; ?> value="lt">&lt;</option>   
-        <option <?php echo $a['temp_op'.$i] == 'le' ? 'selected="selected"' : ''; ?> value="le">&lt;&#61;</option>     
-        <option <?php echo $a['temp_op'.$i] == 'gt' ? 'selected="selected"' : ''; ?> value="gt">&gt;</option>   
+	<select name="<?php echo "temp_op1";?>" >
         <option <?php echo $a['temp_op'.$i] == 'ge' ? 'selected="selected"' : ''; ?> value="ge">&gt;&#61;</option>  
 	</select>
 		</td>
-		<td><input type="text" name="<?php echo "temp_temp$i";?>" value="<?php echo $a['temp_temp'.$i]; ?>" size=3" >&deg;C</td>
+		<td><input type="text" name="<?php echo "temp_temp1";?>" value="<?php echo $a['temp_temp1']; ?>" size=3" >&deg;C</td>
 		<td>then</td> 
 		<td>
-        <select name="<?php echo "temp_onoff$i";?>" >
-        <option <?php echo $a['temp_onoff'.$i] == 'on' ? 'selected="selected"' : ''; ?> value="on">On</option>   
-        <option <?php echo $a['temp_onoff'.$i] == 'off' ? 'selected="selected"' : ''; ?> value="off">Off</option>    
+        <select name="<?php echo "temp_onoff1";?>" >
+        <option <?php echo $a['temp_onoff1'] == 'off' ? 'selected="selected"' : ''; ?> value="off">OFF</option>    
 
         </select></td>
 			</tr>
-<?php } ?>
+			</tr>
+	<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td>
+	else
+	</td>
+      <td>
+		<select name="<?php echo "temp_sensor2";?>" >
+		<?php $sth = $db->prepare("SELECT * FROM sensors");
+		$sth->execute();
+		$result = $sth->fetchAll();
+		foreach ($result as $select) { ?>
+		<option <?php echo $a['temp_sensor2'] == $select['id'] ? 'selected="selected"' : ''; ?> value="<?php echo $select['id']; ?>"><?php echo "{$select['name']}  {$select['tmp']}" ?>&deg;C</option>
+		<?php } ?>
+        </select></td>
+		<td>
+	<select name="<?php echo "temp_op2";?>" >
+        <option <?php echo $a['temp_op2'] == 'ge' ? 'selected="selected"' : ''; ?> value="le">&lt;&#61</option>  
+	</select>
+		</td>
+		<td><input type="text" name="<?php echo "temp_temp2";?>" value="<?php echo $a['temp_temp2']; ?>" size=3" >&deg;C</td>
+		<td>then</td> 
+		<td>
+        <select name="<?php echo "temp_onoff2";?>" >
+        <option <?php echo $a['temp_onoff2'] == 'off' ? 'selected="selected"' : ''; ?> value="on">ON</option>    
+
+        </select></td>
+			</tr>
 	</form>
 	
 <?php } elseif ($a['trigger_checkbox'] == 'on') { ?>

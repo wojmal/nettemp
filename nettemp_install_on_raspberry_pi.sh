@@ -76,10 +76,18 @@ echo -e "${GREEN}Create database${R}"
 
 
 echo -e "${GREEN}Add cron line${R}"
- echo "*/1 * * * * /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/view/view_gen && /var/www/nettemp/modules/highcharts/highcharts" > /var/spool/cron/crontabs/root
- echo "*/1 * * * * /var/www/nettemp/modules/gpio/gpio2 check" >> /var/spool/cron/crontabs/root
- echo "*/5 * * * * /var/www/nettemp/modules/sms/sms_send" >> /var/spool/cron/crontabs/root
- echo "*/5 * * * * /var/www/nettemp/modules/mail/mail_send" >> /var/spool/cron/crontabs/root
+# echo "*/1 * * * * /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/view/view_gen && /var/www/nettemp/modules/highcharts/highcharts" > /var/spool/cron/crontabs/root
+# echo "*/1 * * * * /var/www/nettemp/modules/gpio/gpio2 check" >> /var/spool/cron/crontabs/root
+# echo "*/5 * * * * /var/www/nettemp/modules/sms/sms_send" >> /var/spool/cron/crontabs/root
+# echo "*/5 * * * * /var/www/nettemp/modules/mail/mail_send" >> /var/spool/cron/crontabs/root
+echo "* * * * * /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/gpio/gpio2 check" > /var/spool/cron/crontabs/root
+echo "* * * * * sleep 10 && /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/gpio/gpio2 check" >> /var/spool/cron/crontabs/root
+echo "* * * * * sleep 20 && /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/gpio/gpio2 check" >> /var/spool/cron/crontabs/root
+echo "* * * * * sleep 30 && /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/gpio/gpio2 check" >> /var/spool/cron/crontabs/root
+echo "* * * * * sleep 40 && /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/gpio/gpio2 check" >> /var/spool/cron/crontabs/root
+echo "* * * * * sleep 50 && /var/www/nettemp/modules/sensors/temp_dev_read && /var/www/nettemp/modules/gpio/gpio2 check" >> /var/spool/cron/crontabs/root
+
+
  sed -i '$a @reboot     echo "$(date +\\%y\\%m\\%d-\\%H\\%M) RPI rebooted" >> /var/www/nettemp/tmp/log.txt' /var/spool/cron/crontabs/root
  sed -i '$a*/1 * * * * /var/www/nettemp/modules/tools/system_stats' /var/spool/cron/crontabs/root
  chmod 600 /var/spool/cron/crontabs/root
