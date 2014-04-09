@@ -15,7 +15,7 @@
 
 	border-bottom: 1px solid #888;
 	float: left;
-	background: #eaeced;
+	background: #707070;
 
       }
     #tabs22 li {
@@ -25,7 +25,7 @@
       }
     #tabs22 a {
       float:left;
-      background:url("images/tableft22.gif") no-repeat left top;
+      xbackground:url("images/tableft22.gif") no-repeat left top;
       margin:0;
       padding:0 0 0 5px;
       text-decoration:none;
@@ -33,7 +33,7 @@
     #tabs22 a span {
       float:left;
       display:block;
-      background:url("images/tabright22.gif") no-repeat right top;
+      xbackground:url("images/tabright22.gif") no-repeat right top;
       padding:5px 15px 4px 6px;
       color:#24618E;
       }
@@ -69,7 +69,7 @@
       }
     #tabs22 a {
       float:left;
-      background:url("images/tableft22.gif") no-repeat left top;
+      xbackground:url("images/tableft22.gif") no-repeat left top;
       margin:0;
       padding:0 0 0 5px;
       text-decoration:none;
@@ -77,7 +77,7 @@
     #tabs22 a span {
       float:left;
       display:block;
-      background:url("images/tabright22.gif") no-repeat right top;
+      xbackground:url("images/tabright22.gif") no-repeat right top;
       padding:5px 15px 4px 6px;
       color:#24618E;
       }
@@ -114,7 +114,7 @@
       }
     #tabs22 a {
       float:left;
-      background:url("images/tableft22.gif") no-repeat left top;
+      xbackground:url("images/tableft22.gif") no-repeat left top;
       margin:0;
       padding:0 0 0 5px;
       text-decoration:none;
@@ -122,9 +122,9 @@
     #tabs22 a span {
       float:left;
       display:block;
-      background:url("images/tabright22.gif") no-repeat right top;
+      xbackground:url("images/tabright22.gif") no-repeat right top;
       padding:5px 15px 4px 6px;
-      color:#24618E;
+      color:#fff;
       }
     /* Commented Backslash Hack hides rule from IE5-Mac \*/
     #tabs22 a span {float:none;}

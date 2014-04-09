@@ -28,7 +28,7 @@ function timedRefresh(timeoutPeriod) {
 <div id="header">
 <table border="0" width="1024">
 <tr>
-<td><span class="logo"><a href="http://nettemp.pl" target="_blank"><img src="media/png/nettemp.pl.png" alt="Monitoring Temperatury"></a></span></td>
+<td><span class="logo"><a href="http://nettemp.pl" target="_blank"><img src="media/images/logo2.png" alt="Monitoring Temperatury"></a></span></td>
 <td valign="top"><?php include("modules/login/login.php"); ?></td>
 </tr>
 </table></div>
@@ -80,7 +80,7 @@ case 'settings': include('modules/settings/settings.php'); break;
 
 </div>
 
-	<div id="footer">www.nettemp.pl v7.4.13
+	<div id="footer">GWC Geoglik-net lub-went.pl & www.nettemp.pl v7.4.13
 	</div>
 </div>
 
