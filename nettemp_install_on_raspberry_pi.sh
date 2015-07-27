@@ -97,7 +97,7 @@ if [ "$x1" = "beta" ] || [ "$x2" = "beta" ]
 	git clone -b beta --recursive git://github.com/sosprz/nettemp
     else
 	echo -e "${GREEN}Nettemp master version${R}"
-	git clone --recursive git://github.com/sosprz/nettemp
+	git clone -b master --recursive git://github.com/sosprz/nettemp
 fi
 
 echo -e "${GREEN}Create nettemp database${R}"
