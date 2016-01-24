@@ -1,4 +1,7 @@
 <span class="belka">&nbsp Update<span class="okno">
+
+<a href="https://github.com/sosprz/nettemp">New nettemp3 is available </a> 
+
 <?php
     $update=isset($_POST['update']) ? $_POST['update'] : '';
     if ($update == "Update") { 
