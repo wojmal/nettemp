@@ -141,6 +141,7 @@ case 'controls': include('modules/relays/html/relays_controls.php'); include('mo
 
 <footer class="footer">
       <div class="container text-center">
+	    <span class="label label-danger"><a href="https://github.com/sosprz/nettemp">Nettemp3 is available</a></span>
 	    <span class="label label-default">Hostname: <?php echo gethostname(); ?> </span>
 	    <span class="label label-info"><?php passthru("/usr/bin/git branch |grep [*]|awk '{print $2}' && awk '/Changelog/{y=1;next}y' readme.md |head -2 |grep -v '^$'"); ?> </span>
 	    <span class="label label-success">System time <?php passthru("date +%H:%M:%S");?></span>
