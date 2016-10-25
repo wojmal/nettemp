@@ -94,11 +94,11 @@ class MultiIO
 				return -3;
 			}
 		}
-		if(isset($_GET['mode']))
+		if(isset($_GET['mode'])) //accepted mode: register, update
 		{
 			$this->mode=$_GET['mode'];
 		}
-		if(isset($_GET['ports_type']))
+		if(isset($_GET['ports_type'])) //types for ports used in register mode: ports_type="
 		{
 			$type_str=$_GET['ports_type'];
 			$this->ports_type=preg_split("/;/",$type_str);
@@ -157,16 +157,17 @@ class MultiIO
 			$this->access=$_GET['access'];
 		}
 		
-		if($this->table_exists==false && $this->mode=='register')
-		{
-			//registering card
-			//echo "registering request but no table";
-			error_log("multiIO - registering request but no table");
-		}
-		elseif($this->table_exists==false)
+		if($this->table_exists==false)
 		{
 			//echo 'table not exists';
-			error_log("multiIO - table not exists");
+			if ($this->mode=='register')
+			{
+				error_log("multiIO - register request but table doesn't exists");
+			}
+			else
+			{
+				error_log("multiIO - table doesn't exists");
+			}
 		}
 		elseif ($this->table_exists==true)
 		{
@@ -187,7 +188,7 @@ class MultiIO
 		//error_log("multiIO - register");
 		if($this->address!='' && $this->access!='' && $this->medium!='' && $this->ports_type!='' && count($this->ports_type) > 0)
 		{
-			$this->register_card();
+			$this->register_card();//addcard to new devices
 			$this->register_ports();
 		}
 		else
@@ -278,6 +279,8 @@ class MultiIO
 			$card->bindValue(":unknown", $unknown_cnt);
 			$card->bindValue(":id",$this->card_id);
 			$card->execute();
+			//ToDo
+			//update info about sensors/actors/uknown
 			//var_dump($this->sensors);
 			//var_dump($this->actors);
 	}
