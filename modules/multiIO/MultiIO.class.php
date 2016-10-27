@@ -8,6 +8,7 @@ class MultiIO{
 	private $ports_cnt=0;
 	private $sensors_cnt=0;
 	private $actors_cnt=0;
+	private $unknown_cnt=0;
 	private $access='';
 	private $status='';
 	
@@ -31,9 +32,11 @@ class MultiIO{
 	'checkCard' => "SELECT * FROM multiIO WHERE address = :address",
 	'getSensorList' => "SELECT type FROM types WHERE mode like'%r%'",
 	'getActorList' => "SELECT type FROM types WHERE mode like '%w%'",
-	'addCard' => "INSERT OR IGNORE INTO multiIO(medium,address,device,ports,sensors, actors, unknown, key, access) VALUES (:medium, :address, :device, :ports,0,0,0,'', :access)",
+	'addCard' => "INSERT OR IGNORE INTO multiIO(medium,address,device,ports,sensors, actors, unknown, key, access, status) 
+				VALUES (:medium, :address, :device, :ports,0,0,0,'', :access, :status)",
 	'addPort' => "INSERT OR IGNORE INTO multiIO_ports(cardid,port,port_type,value,reference) VALUES(:cardid, :port, :port_type, '', 0)",
 	'getInsertedId' => "SELECT last_insert_rowid()",
+	'getCardId' => "SELECT id FROM multiIO WHERE address= :address",
 	'setSensorsCount' => "UPDATE multiIO SET sensors= :sensors, actors= :actors, unknown= :unknown WHERE id=:id",
 	'addSensorToNewDevice' => "INSERT OR IGNORE INTO newdev(list) VALUES(:rom)"
 	);
@@ -116,6 +119,7 @@ class MultiIO{
 				$card->bindValue(':address',$this->address);
 				$card->execute();
 				foreach($card as $row){
+var_dump($row);
 					if($row['address']==$this->address){
 						$this->card_id=$row['id'];
 						$this->card_name=$row['name'];
@@ -157,9 +161,24 @@ class MultiIO{
 		}
 		elseif ($this->table_exists==true){
 			//echo "table exists";
-			if($this->mode=='register' && $this->registered_status==false){
+			if($this->mode=='register'){
 				//echo "register request";
-				$this->register();
+				if ($this->registered_status==false && $this->card_id == '-1'){
+					$this->register(); //@add to new devices
+				}
+				elseif($this->registered_status==false && $this->card_id != '-1'){
+					error_log("multiIO - card already in new devices");
+					return -5; //card already in new devices
+				}
+				elseif($this->registered_status==true){
+					error_log("multiIO - card already registered");
+					//in future we need compare types of ports type when registering required mode
+					return -6;//card already registered
+				}
+			}
+			elseif($this->mode == 'update'){
+				//TODO
+				//call update method
 			}
 		}
 	}
@@ -169,8 +188,9 @@ class MultiIO{
 		//echo " register";
 		//error_log("multiIO - register");
 		if($this->address!='' && $this->access!='' && $this->medium!='' && $this->ports_type!='' && count($this->ports_type) > 0){
-			$this->register_card();//addcard to new devices
-			$this->register_ports();
+			$this->register_card();//addcard to multiIO table
+			$this->register_ports();//add ports to multiIO_ports table
+			$this->add_new_devices();
 		}
 		else{
 			echo "insufficient data to register";
@@ -179,18 +199,28 @@ class MultiIO{
 	}
 	
 	function register_card(){
+		//add card to multiIO table
 		$card=$this->db->prepare($this->sql['addCard']);
 		$card->bindValue(":medium", $this->medium);
 		$card->bindValue(":address",$this->address);
 		$card->bindValue(":device", $this->device);
 		$card->bindValue(":ports", $this->ports_cnt);
 		$card->bindValue(":access",$this->access);
+		$card->bindValue(":status","new");
 		$card->execute();
 		$card=$this->db->prepare($this->sql['getInsertedId']);
+		/* alternative method to get id
+		* $card=$this->db->prepare($this->sql['getCardId']);
+		* $card->bindValue(":address",$this->address);
+		*/
 		$card->execute();
 		foreach($card as $row){
 			$this->card_id=intval($row[0],10);
 			//echo $row[0];
+			if (intval($this->card_id,10) == 0){
+				error_log("multiIO - card not added to new devices");
+				return -7;
+			}
 			echo intval($this->card_id,10);
 		}
 		//var_dump($this);
@@ -242,9 +272,6 @@ class MultiIO{
 				
 				$portcnt++;
 			}
-			$newdev=$this->db->prepare($this->sql['addSensorToNewDevice']);
-			$newdev->bindValue(":rom",$this->device."_".$this->address."_(".$sensor_cnt."-".$actor_cnt."-".$unknown_cnt.")");
-			$newdev->execute();
 			$card=$this->db->prepare($this->sql['setSensorsCount']);
 			$card->bindValue(":sensors", $sensor_cnt);
 			$card->bindValue(":actors", $actor_cnt);
@@ -255,6 +282,12 @@ class MultiIO{
 			//update info about sensors/actors/uknown
 			//var_dump($this->sensors);
 			//var_dump($this->actors);
+	}
+	
+	function add_new_devices(){
+		$newdev=$this->db->prepare($this->sql['addSensorToNewDevice']);
+		$newdev->bindValue(":rom",$this->device."_".$this->address."_multi_(".$sensor_cnt."-".$actor_cnt."-".$unknown_cnt.")");
+		$newdev->execute();
 	}
 	
 	
