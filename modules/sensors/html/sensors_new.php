@@ -23,8 +23,26 @@
 	$trim_rom_new=trim($rom_new);
 	if (!in_array($trim_rom_new, $file_expl_array2)) { 
         $new_empty_array[]=$trim_rom_new;
+		//detecting multiIO device
+		$multi=split('_',$trim_rom_new);
+		$multi_dev=false;
+		$multi_title='';
+		if(in_array("multi",$multi)){
+			$multi_dev=true;
+			$root=$_SERVER["DOCUMENT_ROOT"];
+			require_once($root.'/modules/multiIO/MultiIO.class.php');
+			$card=new MultiIO();
+			$multi_title=$card->titlePortsInfo($multi[1]);//send address as parameter for info
+			//$multi_title="1: tmp &#13 2:tmp &#13 3:relay";
+		}
+		//end multiIO
 	?>
-    <td class="col-md-2"><img src="media/ico/TO-220-icon.png" /><?php echo $trim_rom_new; ?></td>
+    <td class="col-md-2"><img src="media/ico/TO-220-icon.png" /><?php echo $trim_rom_new; ?>
+	<!--additional info for multiIO devices-->
+	<?php if($multi_dev){ ?> 
+			<img src="media/ico/Question-icon.png" title="multiIO ports <?php echo $multi_title ;?>"/>
+		<?php }; ?>
+	</td>
     <td class="col-md-2">
     <form action="" method="post" style="display:inline!important;">
 	<input type="hidden" name="id_rom_new" value="<?php echo "$trim_rom_new"; ?>" > 

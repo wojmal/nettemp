@@ -34,11 +34,15 @@ class MultiIO{
 	'getActorList' => "SELECT type FROM types WHERE mode like '%w%'",
 	'addCard' => "INSERT OR IGNORE INTO multiIO(medium,address,device,ports,sensors, actors, unknown, key, access, status) 
 				VALUES (:medium, :address, :device, :ports,0,0,0,'', :access, :status)",
-	'addPort' => "INSERT OR IGNORE INTO multiIO_ports(cardid,port,port_type,value,reference) VALUES(:cardid, :port, :port_type, '', 0)",
+	'addPort' => "INSERT OR IGNORE INTO multiIO_ports(card_id,port_nb,port_type,category, value) VALUES(:card_id, :port_nb, :port_type, :category,  0)",
 	'getInsertedId' => "SELECT last_insert_rowid()",
 	'getCardId' => "SELECT id FROM multiIO WHERE address= :address",
 	'setSensorsCount' => "UPDATE multiIO SET sensors= :sensors, actors= :actors, unknown= :unknown WHERE id=:id",
-	'addSensorToNewDevice' => "INSERT OR IGNORE INTO newdev(list) VALUES(:rom)"
+	'addSensorToNewDevice' => "INSERT OR IGNORE INTO newdev(list) VALUES(:rom)",
+	'getCardPorts' => "SELECT port_nb, port_type, category FROM multiIO_ports WHERE card_id = :card_id",
+	'deleteCardPorts' => "DELETE FROM multiIO_ports WHERE card_id = :card_id",
+	'deleteCard' => "DELETE FROM multiIO WHERE id = :id",
+	'deleteCardFromNew' => "DELETE FROM newdev WHERE list like '%' || :rom || '%'"
 	);
 	
 	protected $sensors = array();
@@ -79,20 +83,20 @@ class MultiIO{
 			if($key!=$this->server_key){
 				//echo "Wrong key";
 				error_log("multiIO - wrong key");
-				return -1;
+				return 0x101;
 			}
 		}
 		else{
 			echo "No key";
 			error_log("multiIO - no key");
-			return -2;
+			return 0x102;
 		}
 		if(isset($_GET['type'])){
 			$this->type=$_GET['type'];
 			if($this->type!='multi'){
 				echo 'no multi device';
 				error_log("multiIO - no multi device");
-				return -3;
+				return 0x103;
 			}
 		}
 		if(isset($_GET['mode'])){ //accepted mode: register, update
@@ -119,7 +123,6 @@ class MultiIO{
 				$card->bindValue(':address',$this->address);
 				$card->execute();
 				foreach($card as $row){
-var_dump($row);
 					if($row['address']==$this->address){
 						$this->card_id=$row['id'];
 						$this->card_name=$row['name'];
@@ -157,7 +160,7 @@ var_dump($row);
 			else{
 				error_log("multiIO - table doesn't exists");
 			}
-			return -4;
+			return 0x104;
 		}
 		elseif ($this->table_exists==true){
 			//echo "table exists";
@@ -167,13 +170,16 @@ var_dump($row);
 					$this->register(); //@add to new devices
 				}
 				elseif($this->registered_status==false && $this->card_id != '-1'){
-					error_log("multiIO - card already in new devices");
-					return -5; //card already in new devices
+					//if card has status "new device" we delete and reregister card and ports
+					$this->delete_card();
+					$this->register();
+					error_log("multiIO - card reregistered and added to new devices");
+					//return 0x105; //card already in new devices
 				}
 				elseif($this->registered_status==true){
 					error_log("multiIO - card already registered");
 					//in future we need compare types of ports type when registering required mode
-					return -6;//card already registered
+					return 0x106;//card already registered
 				}
 			}
 			elseif($this->mode == 'update'){
@@ -198,6 +204,25 @@ var_dump($row);
 		}
 	}
 	
+	function delete_card(){
+		//get card id 
+		$card=$this->db->prepare($this->sql['getCardId']);
+		$card->bindValue(":address",$this->address);
+		$card->execute();
+		$cardid=$card->fetch();
+		//delete ports for the card
+		$delCardPorts=$this->db->prepare($this->sql['deleteCardPorts']);
+		$delCardPorts->bindValue(":card_id", $cardid['id']);
+		$delCardPorts->execute();
+		//delete card
+		$delCard=$this->db->prepare($this->sql['deleteCard']);
+		$delCard->bindValue(":id",$cardid['id']);
+		$delCard->execute();
+		$deleteFromNew=$this->db->prepare($this->sql['deleteCardFromNew']);
+		$deleteFromNew->bindValue(":rom", $this->device."_".$this->address."_multi_");
+		$deleteFromNew->execute();
+	}
+	
 	function register_card(){
 		//add card to multiIO table
 		$card=$this->db->prepare($this->sql['addCard']);
@@ -219,7 +244,7 @@ var_dump($row);
 			//echo $row[0];
 			if (intval($this->card_id,10) == 0){
 				error_log("multiIO - card not added to new devices");
-				return -7;
+				return 0x107;
 			}
 			echo intval($this->card_id,10);
 		}
@@ -244,38 +269,38 @@ var_dump($row);
 				array_push($this->actors,$row[0]);
 			}
 			//try compare sensors and actors
-			$sensor_cnt=0; //counting sensors
-			$actor_cnt=0; //counting actors
-			$unknown_cnt=0; //counting not matched -> clasified as sensor
+			$this->sensor_cnt=0; //counting sensors
+			$this->actor_cnt=0; //counting actors
+			$this->unknown_cnt=0; //counting not matched -> clasified as sensor
 			foreach($this->ports_type as $port){
 				$port_type='unknown';
 				
 				if(in_array($port, $this->sensors)){
 					$port_type='sensor';
-					$sensor_cnt++;
+					$this->sensor_cnt++;
 				}
 				elseif(in_array($port,$this->actors)){
 					$port_type='actor';
-					$actor_cnt++;
+					$this->actor_cnt++;
 				}
 				else{
-					$sensor_cnt++; //not matched clasified as sensor
-					$unknown_cnt++;
+					$this->sensor_cnt++; //not matched clasified as sensor
+					$this->unknown_cnt++;
 				}
-				
+				//add ports to multiIO_ports
 				$add_port=$this->db->prepare($this->sql['addPort']);
-				$add_port->bindValue(':cardid',$this->card_id);
-				$add_port->bindValue(':port',$portcnt);
-				$add_port->bindValue(':port_type',$port_type);
+				$add_port->bindValue(':card_id',$this->card_id);
+				$add_port->bindValue(':port_nb',$portcnt);
+				$add_port->bindValue(':port_type',$port);
+				$add_port->bindValue(':category',$port_type);
 				$add_port->execute();
-				//add sensor to new sensors list
-				
+
 				$portcnt++;
 			}
 			$card=$this->db->prepare($this->sql['setSensorsCount']);
-			$card->bindValue(":sensors", $sensor_cnt);
-			$card->bindValue(":actors", $actor_cnt);
-			$card->bindValue(":unknown", $unknown_cnt);
+			$card->bindValue(":sensors", $this->sensor_cnt);
+			$card->bindValue(":actors", $this->actor_cnt);
+			$card->bindValue(":unknown", $this->unknown_cnt);
 			$card->bindValue(":id",$this->card_id);
 			$card->execute();
 			//ToDo
@@ -284,9 +309,25 @@ var_dump($row);
 			//var_dump($this->actors);
 	}
 	
+	function titlePortsInfo($address){
+		$card=$this->db->prepare($this->sql['getCardId']);
+		$card->bindValue(":address",$address);
+		$card->execute();
+		$cardid=$card->fetch();
+		$ports=$this->db->prepare($this->sql['getCardPorts']);
+		$ports->bindValue(":card_id", $cardid['id']);
+		$ports->execute();
+		$title='';
+		foreach ($ports as $port){
+			$title .= "&#13 ".$port['port_nb'].":".$port['port_type']." ".$port['category'];
+		}
+		return $title;
+		
+	}
+	
 	function add_new_devices(){
 		$newdev=$this->db->prepare($this->sql['addSensorToNewDevice']);
-		$newdev->bindValue(":rom",$this->device."_".$this->address."_multi_(".$sensor_cnt."-".$actor_cnt."-".$unknown_cnt.")");
+		$newdev->bindValue(":rom",$this->device."_".$this->address."_multi_(".$this->sensor_cnt."-".$this->actor_cnt."-".$this->unknown_cnt.")");
 		$newdev->execute();
 	}
 	

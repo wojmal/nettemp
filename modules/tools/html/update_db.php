@@ -302,6 +302,7 @@ $db->exec("INSERT OR IGNORE INTO types (type, unit, unit2, ico, title) VALUES ('
 $db->exec("INSERT OR IGNORE INTO types (type, unit, unit2, ico, title) VALUES ('relay', '', '', '' ,'')");
 $db->exec("INSERT OR IGNORE INTO types (type, unit, unit2, ico, title) VALUES ('baterry', '', '', '' ,'Baterry')");
 
+$db->exec("CREATE TABLE multiIO_ports (id INTEGER PRIMARY KEY,card_id INTEGER,port_nb INTEGER, port_type TEXT, category TEXT, value TEXT)")
 
 
 echo "ok";

@@ -17,6 +17,11 @@ sqlite3 -cmd ".timeout 2000" $dir/dbf/nettemp.db "DELETE FROM newdev;"
 mkdir $dir/tmp 2> /dev/null
 
 echo "$date temp_dev_scan - Deleted .digitemprc" >> $dir/tmp/log.txt
+#DELETE NOT CONFIRMED MULTIIO DEVICES
+php-cgi -f $dir/modules/multiIO/multiIO_scan.php
+echo "$date temp_dev_scan - Deleted multiIO new" >> $dir/tmp/log.txt
+#END MULTIIO
+
 
 # i2c
 $dir/modules/sensors/i2c/i2c_scan
