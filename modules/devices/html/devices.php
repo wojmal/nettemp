@@ -23,6 +23,7 @@
 <a href="index.php?id=devices&type=lcd" ><button class="btn btn-xs btn-default <?php echo $art == 'lcd' ? 'active' : ''; ?>">LCD</button></a>
 <a href="index.php?id=devices&type=i2c" ><button class="btn btn-xs btn-default <?php echo $art == 'i2c' ? 'active' : ''; ?>">I2C</button></a>
 <a href="index.php?id=devices&type=rs485" ><button class="btn btn-xs btn-default <?php echo $art == 'rs485' ? 'active' : ''; ?>">RS485</button></a>
+<a href="index.php?id=devices&type=multiIO" ><button class="btn btn-xs btn-default <?php echo $art == 'multiIO' ? 'active' : ''; ?>">MULTI IO</button></a>
 </p>
 
 
@@ -41,6 +42,7 @@ case 'usb' : include('modules/devices/html/usb.php'); break;
 case 'i2c' : include('modules/devices/html/i2c.php'); break;
 case 'lcd' : include('modules/devices/html/lcd.php'); break;
 case 'rs485' : include('modules/devices/html/rs485.php'); break;
+case 'multiIO' : include('modules/devices/html/multiIO.php'); break;
 }
 ?>
 

@@ -10,8 +10,7 @@ if ( '' == file_get_contents( $dbfile ) ) {
 header("Location: html/errors/no_db.php");
 }
 else {
-include("html/htmlconf.php");
-	
+include("html/htmlconf.php");	
 ?>
 <!DOCTYPE html>
 <html lang="en">

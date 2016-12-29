@@ -62,8 +62,8 @@
     $('.hs').load("status/hosts_status.php");
     $('.rs').load("status/relays_status.php");
     $('.ms').load("status/meteo_status.php");
-    $('.ow2').load("status/ownwidget2.php");
-    $('.ow3').load("status/ownwidget3.php");
+    $('.ow2').load("tmp/ownwidget2.php");
+    $('.ow3').load("tmp/ownwidget3.php");
     $('.mm').load("status/minmax_status.php");
     $('.ups').load("status/ups_status.php");
     $('#justgage_refresh').load("status/justgage_refresh.php");

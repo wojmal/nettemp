@@ -9,6 +9,16 @@
 // php-cgi -f receiver.php key=123456 rom=new_12_temp value=23
 
 // |sed 's/.sql//g'|awk -F0x '{print $2"-"$8$7$6$5$4$3}' |tr A-Z a-z
+$display_log=0;
+if ($display_log == 0)
+{
+foreach ($_GET as $key=>$g)
+{
+   error_log($key." ".$g);
+}
+error_log("test");
+}
+
 if (isset($_GET['type']) && $_GET['type']=='multi'){
 	include('receiver2.php');
 }

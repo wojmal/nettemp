@@ -32,6 +32,7 @@ class Meteo
 	function get_data()
 	{
 		$root=$_SERVER["DOCUMENT_ROOT"];
+$root="/var/www/nettemp";
 		$db = new PDO("sqlite:$root/dbf/nettemp.db") or die("cannot open the database");
 		$met1 = $db->prepare("SELECT * FROM meteo WHERE id='1'");
 		$met1->execute();

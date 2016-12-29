@@ -212,7 +212,7 @@ foreach (glob("tmp/.digitemp*") as $file_digi) {
 		if (!empty($line_one_wire['list'])) {
 		$line_one_wire2=trim($line_one_wire['list']);
 		$digitemprc[] = $line_one_wire2; }
- 	
+	
 	}
 
 	

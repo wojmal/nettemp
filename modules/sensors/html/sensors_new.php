@@ -17,7 +17,7 @@
 	foreach ($result as $a) { 
 	$file_expl_array2[]=$a["rom"];	
 	}
-	
+
 	foreach ($digitemprc as $rom_new) { ?>
 	<?php 
 	$trim_rom_new=trim($rom_new);
@@ -32,9 +32,11 @@
 			$root=$_SERVER["DOCUMENT_ROOT"];
 			require_once($root.'/modules/multiIO/MultiIO.class.php');
 			$card=new MultiIO();
+		
 			$multi_title=$card->titlePortsInfo($multi[1]);//send address as parameter for info
 			//$multi_title="1: tmp &#13 2:tmp &#13 3:relay";
 		}
+		
 		//end multiIO
 	?>
     <td class="col-md-2"><img src="media/ico/TO-220-icon.png" /><?php echo $trim_rom_new; ?>

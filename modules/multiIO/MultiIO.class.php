@@ -30,19 +30,21 @@ class MultiIO{
 	'getServerKey' => "SELECT server_key FROM settings",
 	'checkTable' => "SELECT name FROM sqlite_master WHERE type='table' AND name like '%' || :table || '%'",
 	'checkCard' => "SELECT * FROM multiIO WHERE address = :address",
-	'getSensorList' => "SELECT type FROM types WHERE mode like'%r%'",
+	'getSensorList' => "SELECT type FROM types WHERE mode like'r'",
 	'getActorList' => "SELECT type FROM types WHERE mode like '%w%'",
 	'addCard' => "INSERT OR IGNORE INTO multiIO(medium,address,device,ports,sensors, actors, unknown, key, access, status) 
 				VALUES (:medium, :address, :device, :ports,0,0,0,'', :access, :status)",
 	'addPort' => "INSERT OR IGNORE INTO multiIO_ports(card_id,port_nb,port_type,category, value) VALUES(:card_id, :port_nb, :port_type, :category,  0)",
 	'getInsertedId' => "SELECT last_insert_rowid()",
-	'getCardId' => "SELECT id FROM multiIO WHERE address= :address",
+	'getCardId' => "SELECT id FROM multiIO WHERE address = :address",
 	'setSensorsCount' => "UPDATE multiIO SET sensors= :sensors, actors= :actors, unknown= :unknown WHERE id=:id",
 	'addSensorToNewDevice' => "INSERT OR IGNORE INTO newdev(list) VALUES(:rom)",
 	'getCardPorts' => "SELECT port_nb, port_type, category FROM multiIO_ports WHERE card_id = :card_id",
+	'getCardSensorPorts' => "SELECT port_nb, port_type FROM multiIO_ports WHERE card_id = :card_id AND category != 'actor'",
 	'deleteCardPorts' => "DELETE FROM multiIO_ports WHERE card_id = :card_id",
 	'deleteCard' => "DELETE FROM multiIO WHERE id = :id",
-	'deleteCardFromNew' => "DELETE FROM newdev WHERE list like '%' || :rom || '%'"
+	'deleteCardFromNew' => "DELETE FROM newdev WHERE list like '%' || :rom || '%'",
+	'updateCardStatus' =? "UPDATE multiio SET status=:status WHERE id=:id"
 	);
 	
 	protected $sensors = array();
@@ -102,8 +104,8 @@ class MultiIO{
 		if(isset($_GET['mode'])){ //accepted mode: register, update
 			$this->mode=$_GET['mode'];
 		}
-		if(isset($_GET['ports_type'])){ //types for ports used in register mode: ports_type="
-			$type_str=$_GET['ports_type'];
+		if(isset($_GET['ports'])){ //types for ports used in register mode: portse="
+			$type_str=$_GET['ports'];
 			$this->ports_type=preg_split("/;/",$type_str);
 			$this->ports_cnt=count($this->ports_type);
 			//var_dump($this->ports_type);
@@ -185,6 +187,11 @@ class MultiIO{
 			elseif($this->mode == 'update'){
 				//TODO
 				//call update method
+				if ($this->registered_status==false && $this->card_id == '-1'){
+					$ecode=0x108;
+					return $ecode." register required";
+				}
+				error_log("multiIO - ToDo!!!");
 			}
 		}
 	}
@@ -194,7 +201,7 @@ class MultiIO{
 		//echo " register";
 		//error_log("multiIO - register");
 		if($this->address!='' && $this->access!='' && $this->medium!='' && $this->ports_type!='' && count($this->ports_type) > 0){
-			$this->register_card();//addcard to multiIO table
+			$this->register_card();//add card to multiIO table
 			$this->register_ports();//add ports to multiIO_ports table
 			$this->add_new_devices();
 		}
@@ -272,14 +279,15 @@ class MultiIO{
 			$this->sensor_cnt=0; //counting sensors
 			$this->actor_cnt=0; //counting actors
 			$this->unknown_cnt=0; //counting not matched -> clasified as sensor
-			foreach($this->ports_type as $port){
+			foreach($this->ports_type as $ports){
 				$port_type='unknown';
+				$port=preg_split("/:/",$ports);
 				
-				if(in_array($port, $this->sensors)){
+				if(in_array($port[1], $this->sensors)){
 					$port_type='sensor';
 					$this->sensor_cnt++;
 				}
-				elseif(in_array($port,$this->actors)){
+				elseif(in_array($port[1],$this->actors)){
 					$port_type='actor';
 					$this->actor_cnt++;
 				}
@@ -291,7 +299,7 @@ class MultiIO{
 				$add_port=$this->db->prepare($this->sql['addPort']);
 				$add_port->bindValue(':card_id',$this->card_id);
 				$add_port->bindValue(':port_nb',$portcnt);
-				$add_port->bindValue(':port_type',$port);
+				$add_port->bindValue(':port_type',$port[1]);
 				$add_port->bindValue(':category',$port_type);
 				$add_port->execute();
 
@@ -310,9 +318,7 @@ class MultiIO{
 	}
 	
 	function titlePortsInfo($address){
-		$card=$this->db->prepare($this->sql['getCardId']);
-		$card->bindValue(":address",$address);
-		$card->execute();
+		$cardid=$this->getCardId($address);
 		$cardid=$card->fetch();
 		$ports=$this->db->prepare($this->sql['getCardPorts']);
 		$ports->bindValue(":card_id", $cardid['id']);
@@ -331,9 +337,33 @@ class MultiIO{
 		$newdev->execute();
 	}
 	
+	function confirm_new_devices(){
+		if(isset($_GET['id_rom_new'])){
+			$card_name_split=preg_split("/_/",$_GET['id_rom_new']);
+			for ($i=0;i<sizeof($card_name_split);i++){
+				if($card_name_split[$i]=='multi' && $i>0){
+					$this->card_name=$card_name_split[$i-1];
+				}
+			}
+			if ($this->card_name != ""){
+				$card_id=$this->getCardId($this->card_name);
+				$cardid=$card_id->fetch();
+				if ($cardid != ""){
+					$sensorPorts=$this->db->prepare($this->sql['getCardSensorPorts']);
+					
+				}
+			}
+		}
+		
+		
+	}
 	
-	
-	
+	protected function getCardId($address){
+		$card=$this->db->prepare($this->sql['getCardId']);
+		$card->bindValue(":address",$address);
+		$card->execute();
+		return $card;
+	}
 	
 	
 	protected function execute($name, $arguments=array()){
